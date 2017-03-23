@@ -1,0 +1,15 @@
+{
+  "name": "gimport",
+  "version": "1.0.0",
+  "description": "Global Import - simple mecanism to import node modules in a better way",
+  "main": "gimport.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "global",
+    "import"
+  ],
+  "author": "Rafa G. Blanes",
+  "license": "ISC"
+}
