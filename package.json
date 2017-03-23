@@ -15,6 +15,10 @@
   "dependencies": {
     "jsonfile": "^2.4.0"
   },
+  "repository" : { 
+    "type" : "git",
+    "url" : "https://github.com/gomezbl/gimport.git"
+  },
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^3.2.0"
