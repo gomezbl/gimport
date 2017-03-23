@@ -1,0 +1,5 @@
+{ 
+	  "module_average" : "samplemodules/module_average.js",
+	  "module_multiply" : "samplemodules/module_multiply.js",
+	  "module_sum" : "samplemodules/module_sum.js"
+}
