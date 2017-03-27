@@ -7,7 +7,6 @@
 var jf = require('jsonfile');
 var path = require('path');
 var mappings = {};
-var basepath = {};
 var GIMPORT_MAPPING_JSON_FILENAME = "gimport.mappings.json";
 var verbose = false;
 
@@ -18,18 +17,28 @@ var gimport = {};
 	/*
 	 * Prepares the module to run
 	 * Params:
-	 *   basepath: base path or root of the solution. Inside that root should exist GREQUIRE_MAPPING_JSON_FILENAME file
+	 *   basepath (optional): base path or root of the solution. Inside that root should exist GREQUIRE_MAPPING_JSON_FILENAME file
 	 *      with the mappings.
+	 *   mappingFileName (optional): file name with the modules mappings. If not set, then default "gimport.mappings.json" file will be loaded
 	 * 
 	 * This method creates global.gimport function to load modules given its mapping name
 	 *
 	 */
-gimport.use = function(basepath) {
+gimport.init = function(basepath, mappingFilename) {
 	var fs = require('fs');
 	var allmodulesexist = true;
-	basepath = basepath;
-	mappings = jf.readFileSync( path.join(basepath, GIMPORT_MAPPING_JSON_FILENAME) );
+	var basepath = basepath;
 
+	if ( basepath == null )	 {
+		basepath = __dirname;
+	}
+
+	if ( mappingFilename == null ) {
+		mappingFilename = GIMPORT_MAPPING_JSON_FILENAME;
+	}
+
+	mappings = jf.readFileSync( path.join(basepath, mappingFilename) );
+	
 	/* Check if all module exists */
 	for( var modulename in mappings ) {
 		var pathtomodule = path.join( basepath, mappings[modulename]);
@@ -46,12 +55,29 @@ gimport.use = function(basepath) {
 
 	if ( !allmodulesexist ) { throw new Error("gimport unable to locate one or more modules. Check config file '" + GREQUIRE_MAPPING_JSON_FILENAME + "'."); }
 
+	if ( global.gimport != null ) {
+		throw new Error( 'gimport.init() called more than once' );
+	}
+
 	global.gimport = function(modulename) {
 		if ( mappings[modulename] == undefined ) throw new Error('Module not defined in gimport.mappings.json : ' + modulename);
 		
 		return require( path.join(basepath, mappings[modulename]) )
 	}			
 };
+
+/*
+ * Loads the defintion of modules again clearing previous information loaded in init() call.
+ * Params: same than init()
+ */
+gimport.reload = function( basepath, mappingFilename ) {
+	if ( global.gimport == null ) { throw new Error("init() function not called."); }
+
+	mappings = {};
+	global.gimport = null;
+
+	gimport.init( basepath, mappingFilename )
+}
 
 /*
  * Returns the number of modules loaded into global.gimport

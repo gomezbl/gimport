@@ -6,7 +6,7 @@ var gimport = require("../gimport");
 
 /* Initialize gimport before tests */
 before( function() {
-	gimport.withVerbose().use( __dirname );
+	gimport.init( __dirname );
 });
 
 describe('Basic tests', function() {
@@ -55,4 +55,57 @@ describe('Basic tests', function() {
 			assert.equal( 9, module_sum.sum(6,3) )
 		});
 	});
+
+	describe('#Check error conditions', function() {
+		it( 'gimport.init() called twice', function() {
+			try {
+				/* .init has been called in before() function above */
+				gimport.init(__dirname);
+				assert.fail();
+			} catch(e) {}
+		});
+	});
+
+	describe('#Check reload of modules', function() {
+		it( 'reload() basic call', function() {
+			gimport.reload(__dirname);
+		});
+
+		it( 'reload() with new mappings', function() {
+			gimport.reload(__dirname, 'gimport.mappings2.json');
+		});
+
+		it( 'reload() with new mappings and check module count', function() {
+			gimport.reload(__dirname, 'gimport.mappings2.json');
+
+			assert.equal(1, gimport.modulesLoadedCount());
+		});
+
+
+		it( 'reload() with new mappings and check module invocation', function() {
+			gimport.reload(__dirname, 'gimport.mappings2.json');
+
+			var module_average = global.gimport('module_average');
+			
+			assert.equal( 'object', typeof module_average )
+			assert.equal( 4, module_average.average( [2,4,6]) )
+		});
+
+
+		it( 'reload() with new mappings and try to load wrong module name', function() {
+			gimport.reload(__dirname, 'gimport.mappings2.json');
+
+			assert.equal(1, gimport.modulesLoadedCount());
+
+			var module_average = global.gimport('module_average');
+			
+			assert.equal( 'object', typeof module_average )
+			assert.equal( 4, module_average.average( [2,4,6]) )
+
+			try {
+				global.gimport('foomodule');
+				assert.fail();
+			} catch(e) {}
+		});
+	})
 });
