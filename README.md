@@ -8,13 +8,13 @@ This module tries to replace require() method in NodeJS to avoid nesting of loca
 When we use require(), the path to module load depends on the path of the code calling that function().
 
 For example, in this siple project structure:
-
-/
-|-folder-a/
-|----------mymodule1.js
-|-folder-b/folder-c/
-|-------------------mymodule2.js
-| mymodule.js
+```
+folder-a
+|        mymodule1.js
+folder-b/folder-c
+|               mymodule2.js
+mymodule.js
+```
 
 If mymodule1.js needs to refer to mymodule.js, it needs to call require('../mymodule.js').
 Instead, if mymodule2.js needs to do the same, then it nees to call require('../..mymodule.js');
