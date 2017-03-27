@@ -28,10 +28,11 @@ The problem gets worse within an application with a high number of modules and d
 With **gimport**, once the mappings are define in a json file, mymodule1 and mymodule2 modules can call global.gimport('mymodule'), with no relative paths.
 
 For doing that, a file like this one should be define (usually with the name of "gimport.mappings.json")
-
+```
 {
-   "mymodule" : "/mymodule.js",
+   "mymodule" : "/mymodule.js"
 }
+```
 
 After calling gimport.init() just once in boot process of the project, global.grequire() method is defined and can be used throughout the whole application.
 
