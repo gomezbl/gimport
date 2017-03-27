@@ -17,7 +17,8 @@ mymodule.js
 ```
 
 If mymodule1.js needs to refer to mymodule.js, it needs to call require('../mymodule.js').
-Instead, if mymodule2.js needs to do the same, then it nees to call require('../..mymodule.js');
+
+Instead, if mymodule2.js needs to do the same, then it nees to call require('../../mymodule.js');
 
 This shows two main problems that ofuscates the code and reduces it maintenability:
 * Those calls to require() with relative paths should be changed if mymodule1.js or mymodule2.js locations changes.
