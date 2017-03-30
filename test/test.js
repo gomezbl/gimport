@@ -107,5 +107,14 @@ describe('Basic tests', function() {
 				assert.fail();
 			} catch(e) {}
 		});
+
+		it( 'reload() with bad mapping json file', function() {
+			try {
+				gimport.reload(__dirname, 'gimport.badmappings.json');
+				assert.fail();
+			} catch(e) {
+				// If error thown, test success
+			}
+		})
 	})
 });

@@ -4,8 +4,6 @@
  * Module for simple requiring other modules based on mappings
  */
 
-var jf = require('jsonfile');
-var path = require('path');
 var mappings = {};
 var GIMPORT_MAPPING_JSON_FILENAME = "gimport.mappings.json";
 var verbose = false;
@@ -26,8 +24,14 @@ var gimport = {};
 	 */
 gimport.init = function(basepath, mappingFilename) {
 	var fs = require('fs');
+	var jf = require('jsonfile');
+	var path = require('path');
 	var allmodulesexist = true;
 	var basepath = basepath;
+
+	if ( global.gimport != null ) {
+		throw new Error( 'gimport.init() called more than once' );
+	}
 
 	if ( basepath == null )	 {
 		basepath = __dirname;
@@ -37,7 +41,11 @@ gimport.init = function(basepath, mappingFilename) {
 		mappingFilename = GIMPORT_MAPPING_JSON_FILENAME;
 	}
 
-	mappings = jf.readFileSync( path.join(basepath, mappingFilename) );
+	try {
+		mappings = jf.readFileSync( path.join(basepath, mappingFilename) );
+	} catch(e) {
+		throw new Error("Exception when loading json file: " + e);
+	}
 	
 	/* Check if all module exists */
 	for( var modulename in mappings ) {
@@ -54,10 +62,6 @@ gimport.init = function(basepath, mappingFilename) {
 	if ( allmodulesexist == true && verbose == true ) { console.log( "gimport: all modules mapped with success!"); }
 
 	if ( !allmodulesexist ) { throw new Error("gimport unable to locate one or more modules. Check config file '" + GREQUIRE_MAPPING_JSON_FILENAME + "'."); }
-
-	if ( global.gimport != null ) {
-		throw new Error( 'gimport.init() called more than once' );
-	}
 
 	global.gimport = function(modulename) {
 		if ( mappings[modulename] == undefined ) throw new Error('Module not defined in gimport.mappings.json : ' + modulename);
