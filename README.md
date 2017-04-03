@@ -1,53 +1,126 @@
-# gimport
-## Global Import - simple mecanism to import node modules in a better way.
-
-This NodeJS module is in progress.
+# gimport (global import). Simple mecanism to import node modules in a better way
 
 This module tries to replace require() method in NodeJS to avoid nesting of local folders.
 
-When we use require(), the path to module load depends on the path of the code calling that function().
+When we use require(), the path to module load depends on the path of the code calling that function(); in a complex application with many modules and a complex folder structure, we can have something like this:
 
-For example, in this siple project structure:
-```
-folder-a
-|        mymodule1.js
-folder-b/folder-c
-|               mymodule2.js
-mymodule.js
-```
+	var r = require("../../../../core/lib/mymodule.js");
 
+If mymodule.js location changes, then all its referencen along the application should be updated.
+
+What if we could write something like this instead?
+
+	global.grequire("mymodule");
+
+Given a json mappings file, if mymodule location changes, then only one place should be updated in the whol application.
+
+For example, in this simple project structure:
+
+	folder-a
+	|        mymodule1.js
+	folder-b/folder-c
+	|               mymodule2.js
+	mymodule.js
+	
 If mymodule1.js needs to refer to mymodule.js, it needs to call require('../mymodule.js').
 
 Instead, if mymodule2.js needs to do the same, then it nees to call require('../../mymodule.js');
 
 This shows two main problems that ofuscates the code and reduces it maintenability:
-* Those calls to require() with relative paths should be changed if mymodule1.js or mymodule2.js locations changes.
-* If mymodule.js location changes instead, then both requires() in mymodule1.js and mymodule2.js should change as well.
-
-The problem gets worse within an application with a high number of modules and dependencies.
+- Those calls to require() with relative paths should be changed if mymodule1.js or mymodule2.js locations changes.
+- If mymodule.js location changes instead, then both requires() in mymodule1.js and mymodule2.js should change as well.
+ 
+The problem gets worse within an application with a high number of modules and dependencies, as mentioned before.
 
 With **gimport**, once the mappings are define in a json file, mymodule1 and mymodule2 modules can call global.gimport('mymodule'), with no relative paths.
 
-For doing that, a file like this one should be define (usually with the name of "gimport.mappings.json")
-```
-{
-   "mymodule" : "/mymodule.js"
-}
-```
+For doing that, a file like this one should be define (usually with the default name of "gimport.mappings.json")
 
+	{
+	   "mymodule" : "/mymodule.js"
+	}
+	
 After calling gimport.init() just once in boot process of the project, global.grequire() method is defined and can be used throughout the whole application.
 
-In general, is not a good idea to pollute 'global' scope, but gimport expects to improve de require logic in NodeJS applications.
+In general, is not a good idea to pollute 'global' scope, but gimport expects to improve de require logic in NodeJS applications and reduce the complexity of "require" calls within the application.
 
-On the other hand, this simple module can be used as DIY (dependency inyection) mecanism for the application, cause decouples the need of a client module to know the location of its dependencies.
+On the other hand, this simple module can be used as a basic dependency inyection mecanism for the application, cause decouples the need of a client module to know the location of its dependencies.
 
-# Module API
+#Mapping files structure
+
+The mapping file is a simple json file with the information of the name of the module and its location:
+
+	{
+	   "[module 1 name]", "[relative location to module 1]",
+	   "[module 2 name]", "[relative location to module 2]",
+	   "[module 3 name]", "[relative location to module 3]",
+	   ...  
+	}
+	
+# Usage
+Install the module in your application with:
+
+	npm install grequire --save
+
+Then define grequire.mapings.json file as shown above.
+
+Initialize the module in the bootstrap process of your application with:
+
+	require("gimport").init();
+
+The you can load you modules easily with (no paths needed):
+
+	var m = global.grequire("[mymodulename]");
+
+And enjoy!
+
+# Module API and usage
 ## gimport.init( basepath, mappingsfilename )
- (awaiting final version)
+Initializes the module. It should be called just once in the application lifecycle.
+
+Params:
+
+- basepath (optional): base path or root of the solution. Inside that root should exist gimport.mappings.json file with the mappings.
+- mappingFileName (optional): file name with the modules mappings. If not set, then default "gimport.mappings.json" file will be loaded
+
+This method creates global.gimport function to load modules given its mapping name. An exception is thown if:
+
+- The format of the file is not a valid json document
+- The method has been called previously. If new mappings file should be load, call reload() instead.
+- One or more modules in mappings files don't exist
+
+ Sample usage:
+ 
+	require('gimport').init()
+Loads in current path the file with the default name "gimport.mappings.json"
+
+	require('gimport').init( '[path]' )
+Loads in [path] folder the mapping file with de default name "gimport.mappings.json"
+ 
+	require('gimport').init( '[path]', 'mymappingfile.json' )
+	
+Loads "[path]/mymappingfile.json" mapping file
 
 ## gimport.withVerbose()
- (awaiting final version)
+
+Indicates if the module should show log messages to console when loading mappings.
+Useful in debug mode. Simple usage:
+
+	require('gimport').withVerbose().init();
+
+When calling this way, debug messages will be shown in console.
 
 ## gimport.reload( basepath, mappingsfilename )
- (awaiting final version)
 
+Loads the defintion of modules again clearing previous information loaded in init() call. Useful for testing when modules mocks should be used.
+
+Params, throws and usage: same than init()
+
+#Tests
+gimport uses mocha as a testing framework using chai assert library.
+
+To test the module, just run:
+
+	$ mocha
+
+The module has been tested for LTS node versions: v0.12.18, v4.8.1 and v6.10.1.
