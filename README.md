@@ -125,7 +125,7 @@ Loads the defintion of modules again clearing previous information loaded in ini
 
 Params, throws and usage: same than init()
 
-#Tests
+# Tests
 
 gimport uses [mocha](https://mochajs.org/) as a testing framework using [chai js library](http://chaijs.com/) assert library.
 
