@@ -1,10 +1,10 @@
 {
   "name": "gimport",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Global Import - simple mecanism to import node modules in a better way",
   "main": "gimport.js",
   "scripts": {
-    "test": "test"
+    "test": "mocha"
   },
   "keywords": [
     "global",
