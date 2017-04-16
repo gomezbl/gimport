@@ -10,7 +10,7 @@ If mymodule.js location changes, then all its references along the application s
 
 What if we could write something like this instead?
 
-	global.grequire("mymodule");
+	global.gimport("mymodule");
 
 Given a json mappings file (described below), if mymodule location changes, then only one place should be updated in the whole application.
 
@@ -73,9 +73,9 @@ Initialize the module in the bootstrap process of your application with:
 
 	require("gimport").init();
 
-The you can load you modules easily with (no paths needed):
+Then you can load your modules easily with (no paths needed):
 
-	var m = global.grequire("[mymodulename]");
+	var m = global.gimport("[mymodulename]");
 
 And enjoy!
 
