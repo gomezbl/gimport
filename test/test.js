@@ -116,5 +116,20 @@ describe('Basic tests', function() {
 				// If error thown, test success
 			}
 		})
-	})
+	});
+
+	describe('#Check initm()', function() {
+		it( 'gimport.initm()', function() {
+			gimport.initm( __dirname );
+
+			assert.equal(3, gimport.modulesLoadedCount());
+		});
+
+		it( 'gimport.initm() called twice', function() {
+			gimport.initm( __dirname );
+			gimport.initm( __dirname );
+
+			assert.equal(3, gimport.modulesLoadedCount());
+		})
+	});
 });

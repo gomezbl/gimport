@@ -110,6 +110,12 @@ Loads in [path] folder the mapping file with de default name "gimport.mappings.j
 	
 Loads "[path]/mymappingfile.json" mapping file
 
+## gimport.initm( basepath, mappingsfilename )
+
+Same than init() but without the restriction that the method should only be called once. 
+
+initm() allows multiple calls to initialize the module for loading mappings. This is useful for testing, when multiple test files may be called with no order and they need gimport to be initialized.
+
 ## gimport.withVerbose()
 
 Indicates if the module should show log messages to console when loading mappings.

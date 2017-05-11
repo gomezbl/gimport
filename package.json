@@ -1,6 +1,6 @@
 {
   "name": "gimport",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Global Import - simple mecanism to import node modules in a better way",
   "main": "gimport.js",
   "scripts": {
